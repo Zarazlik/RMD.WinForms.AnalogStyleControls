@@ -29,7 +29,7 @@ namespace RMD.WinForms.AnalogStyleControls
 					this.value = value;
 				}
 
-				NeedleAngle = GetNeedleAngel(MinNeedleAngle, MaxNeedleAngle, MinValue, MaxValue);
+				NeedleAngle = GetNeedleAngel(StartNeedleAngle, EndNeedleAngle, MinValue, MaxValue);
 				Refresh();
 			}
 		}
@@ -38,9 +38,20 @@ namespace RMD.WinForms.AnalogStyleControls
 		public float NeedleAngle { get; private set; }
 
 		[Category("Behavior")]
-		public float MinNeedleAngle { get; set; }
+		public float StartNeedleAngle { get; set; }
 		[Category("Behavior")]
-		public float MaxNeedleAngle { get; set; }
+		public float EndNeedleAngle { get; private set; }
+		[Category("Behavior")]
+		public float SweepNeedleAngle
+		{
+			get { return sweepNeedleAngle; }
+			set 
+			{ 
+				sweepNeedleAngle = value;
+				EndNeedleAngle = StartNeedleAngle + sweepNeedleAngle;
+			}
+		}
+		float sweepNeedleAngle;
 
 		[Category("Behavior")]
 		public float MinValue { get; set; }		
@@ -59,12 +70,12 @@ namespace RMD.WinForms.AnalogStyleControls
 			PointF center = new PointF(this.Width / 2, this.Height / 2);
 
 			g.FillEllipse(new SolidBrush(Color.Red), center.X - 5, center.Y - 5,  10, 10);
+			
+			g.DrawLine(new Pen(Color.Black), center, GetPointOnCercle(center, 100, StartNeedleAngle));
+			g.DrawLine(new Pen(Color.Black), center, GetPointOnCercle(center, 100, EndNeedleAngle));
+			g.DrawLine(new Pen(Color.Blue), center, GetPointOnCercle(center, 110, NeedleAngle));
 
-			g.DrawLine(new Pen(Color.Blue), center, GetPointOnCercle(center, 100, NeedleAngle));
-			g.DrawLine(new Pen(Color.Black), center, GetPointOnCercle(center, 100, MinNeedleAngle));
-			g.DrawLine(new Pen(Color.Black), center, GetPointOnCercle(center, 100, MaxNeedleAngle));
-
-			DrawArcLine(new Pen(Color.Green), center, 120, MinNeedleAngle, 180);
+			DrawArcLine(new Pen(Color.Green), center, 120, StartNeedleAngle, SweepNeedleAngle);
 
 			PointF GetPointOnCercle(PointF center, float radius, float angle)
 			{
@@ -86,9 +97,9 @@ namespace RMD.WinForms.AnalogStyleControls
 
 		private float GetNeedleAngel(float minAngle, float maxAngle, float minValue, float maxValue)
 		{
-			float step = (minAngle - maxAngle) / (maxValue - minValue);
+			float step =  (maxAngle - minAngle) / (maxValue - minValue);
 
-			return minAngle - (step * (maxValue - Value));
+			return minAngle + (step * (minValue + Value));
 		}
 	}
 }
