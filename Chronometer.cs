@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Drawing2D;
 
 namespace RMD.WinForms.AnalogStyleControls
 {
@@ -69,17 +70,22 @@ namespace RMD.WinForms.AnalogStyleControls
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
+			g.SmoothingMode = SmoothingMode.HighQuality;
 
 			PointF center = new PointF(this.Width / 2, this.Height / 2);
+
+			DrawArcLine(new Pen(Color.Blue, 5), center, 175, StartNeedleAngle, 29);
+			DrawArcLine(new Pen(Color.Green, 5), center, 175, StartNeedleAngle + 31, 90);
+			DrawArcLine(new Pen(Color.Orange, 5), center, 175, StartNeedleAngle + 122, 28);
+			DrawArcLine(new Pen(Color.Red, 5), center, 175, StartNeedleAngle + 151, 29);
 			DrawRods();
 
 			g.FillEllipse(new SolidBrush(Color.Red), center.X - 5, center.Y - 5,  10, 10);
+			g.DrawLine(new Pen(Color.Red, 2.5f), center, GetPointOnCercle(center, 188, NeedleAngle));
 
-			g.DrawLine(new Pen(Color.Black), center, GetPointOnCercle(center, 100, StartNeedleAngle));
-			g.DrawLine(new Pen(Color.Black), center, GetPointOnCercle(center, 100, EndNeedleAngle));
-			g.DrawLine(new Pen(Color.Red, 2.5f), center, GetPointOnCercle(center, 110, NeedleAngle));
+			DrawArcLine(new Pen(Color.Black), center, 200, StartNeedleAngle, SweepNeedleAngle);
+			
 
-			DrawArcLine(new Pen(Color.Green), center, 120, StartNeedleAngle, SweepNeedleAngle);
 
 			PointF GetPointOnCercle(PointF center, float radius, float angle)
 			{
@@ -105,7 +111,7 @@ namespace RMD.WinForms.AnalogStyleControls
 
 				for (int i = 0; i <= rodsCount; i++)
 				{
-					g.DrawLine(new Pen(Color.Black), GetPointOnCercle(center, 120, StartNeedleAngle + (step * i)), GetPointOnCercle(center, 100, StartNeedleAngle + (step * i)));
+					g.DrawLine(new Pen(Color.Black), GetPointOnCercle(center, 200, StartNeedleAngle + (step * i)), GetPointOnCercle(center, 190, StartNeedleAngle + (step * i)));
 				}
 			}
 		}
