@@ -58,6 +58,9 @@ namespace RMD.WinForms.AnalogStyleControls
 		[Category("Behavior")]
 		public float MaxValue { get; set; }
 
+		[Category("Behavior")]
+		public float ScaleRodsStep { get; set; }
+
 		public Chronometer() 
 		{ 
 			DoubleBuffered = true;
@@ -68,12 +71,13 @@ namespace RMD.WinForms.AnalogStyleControls
 			Graphics g = e.Graphics;
 
 			PointF center = new PointF(this.Width / 2, this.Height / 2);
+			DrawRods();
 
 			g.FillEllipse(new SolidBrush(Color.Red), center.X - 5, center.Y - 5,  10, 10);
-			
+
 			g.DrawLine(new Pen(Color.Black), center, GetPointOnCercle(center, 100, StartNeedleAngle));
 			g.DrawLine(new Pen(Color.Black), center, GetPointOnCercle(center, 100, EndNeedleAngle));
-			g.DrawLine(new Pen(Color.Blue), center, GetPointOnCercle(center, 110, NeedleAngle));
+			g.DrawLine(new Pen(Color.Red, 2.5f), center, GetPointOnCercle(center, 110, NeedleAngle));
 
 			DrawArcLine(new Pen(Color.Green), center, 120, StartNeedleAngle, SweepNeedleAngle);
 
@@ -92,6 +96,17 @@ namespace RMD.WinForms.AnalogStyleControls
 				RectangleF rect = new RectangleF(center.X - radius, center.Y - radius, 2 * radius, 2 * radius);
 
 				g.DrawArc(pen, rect, startAngle, sweepAngle);
+			}
+
+			void DrawRods()
+			{
+				uint rodsCount = (uint)((MaxValue - MinValue) / ScaleRodsStep);
+				float step = SweepNeedleAngle / rodsCount;
+
+				for (int i = 0; i <= rodsCount; i++)
+				{
+					g.DrawLine(new Pen(Color.Black), GetPointOnCercle(center, 120, StartNeedleAngle + (step * i)), GetPointOnCercle(center, 100, StartNeedleAngle + (step * i)));
+				}
 			}
 		}
 
