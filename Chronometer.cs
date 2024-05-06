@@ -61,6 +61,10 @@ namespace RMD.WinForms.AnalogStyleControls
 
 		[Category("Behavior")]
 		public float ScaleRodsStep { get; set; }
+		[Category("Behavior")]
+		public int AccentScaleRodsStep { get; set; }
+		[Category("Behavior")]
+		public int SubAccentScaleRodsStep { get; set; }
 
 		public Chronometer() 
 		{ 
@@ -84,7 +88,6 @@ namespace RMD.WinForms.AnalogStyleControls
 			g.DrawLine(new Pen(Color.Red, 2.5f), center, GetPointOnCercle(center, 188, NeedleAngle));
 
 			DrawArcLine(new Pen(Color.Black), center, 200, StartNeedleAngle, SweepNeedleAngle);
-			
 
 
 			PointF GetPointOnCercle(PointF center, float radius, float angle)
@@ -109,9 +112,28 @@ namespace RMD.WinForms.AnalogStyleControls
 				uint rodsCount = (uint)((MaxValue - MinValue) / ScaleRodsStep);
 				float step = SweepNeedleAngle / rodsCount;
 
-				for (int i = 0; i <= rodsCount; i++)
+				for (int i = 0, accent = AccentScaleRodsStep, subAccent = SubAccentScaleRodsStep; i <= rodsCount; i++, accent++, subAccent++)
 				{
-					g.DrawLine(new Pen(Color.Black), GetPointOnCercle(center, 200, StartNeedleAngle + (step * i)), GetPointOnCercle(center, 190, StartNeedleAngle + (step * i)));
+					if (accent == AccentScaleRodsStep) 
+					{
+						g.DrawLine(new Pen(Color.Black, 3), GetPointOnCercle(center, 200, StartNeedleAngle + (step * i)), GetPointOnCercle(center, 185, StartNeedleAngle + (step * i)));
+						accent = 0;
+
+						if (subAccent == SubAccentScaleRodsStep)
+						{
+							subAccent = 0;
+						}
+					}
+					else if (subAccent == SubAccentScaleRodsStep)
+					{
+						g.DrawLine(new Pen(Color.Black), GetPointOnCercle(center, 200, StartNeedleAngle + (step * i)), GetPointOnCercle(center, 185, StartNeedleAngle + (step * i)));
+						subAccent = 0;
+					}
+					else
+					{
+						g.DrawLine(new Pen(Color.Black), GetPointOnCercle(center, 200, StartNeedleAngle + (step * i)), GetPointOnCercle(center, 190, StartNeedleAngle + (step * i)));
+					}
+					
 				}
 			}
 		}
