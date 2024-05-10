@@ -39,7 +39,7 @@ namespace RMD.WinForms.AnalogStyleControls
 		float value;
 		public float NeedleAngle { get; private set; }
 
-		Arc needleArc;
+		Arc needleArc = new Arc(150, 180);
 		[Category("Positioning")]
 		public float StartNeedleAngle 
 		{ 
@@ -59,19 +59,25 @@ namespace RMD.WinForms.AnalogStyleControls
 		}
 
 		[Category("Scale")]
-		public float MinValue { get; set; }		
+		public float MinValue { get; set; } = 0;
 		[Category("Scale")]
-		public float MaxValue { get; set; }
+		public float MaxValue { get; set; } = 100;
 
 		[Category("Scale")]
-		public float ScaleRodsStep { get; set; }
+		public float ScaleRodsStep { get; set; } = 1;
 		[Category("Scale")]
-		public int AccentScaleRodsStep { get; set; }
+		public int AccentScaleRodsStep { get; set; } = 5;
 		[Category("Scale")]
-		public int SubAccentScaleRodsStep { get; set; }
+		public int SubAccentScaleRodsStep { get; set; } = 10;
 
 		[Category("Scale")]
-		public Point[] ColorScaleLineValues { get; set; }
+		public Point[] ColorScaleLineValues { get; set; } = new Point[]
+		{
+		new Point(0, 20),
+		new Point(20, 75),
+		new Point(75, 90),
+		new Point(90, 100)
+		};
 		[Category("Scale")]
 		public Color[] ColorScaleLineColors { get; set; } = new Color[]
 		{
