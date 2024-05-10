@@ -32,7 +32,7 @@ namespace RMD.WinForms.AnalogStyleControls
 					this.value = value;
 				}
 
-				NeedleAngle = GetNeedleAngel(StartNeedleAngle, EndNeedleAngle, MinValue, MaxValue);
+				NeedleAngle = GetAngelOfValue(value);
 				Refresh();
 			}
 		}
@@ -73,16 +73,28 @@ namespace RMD.WinForms.AnalogStyleControls
 		[Category("Scale")]
 		public Point[] ColorScaleLineValues { get; set; }
 		[Category("Scale")]
-		public Color[] ColorScaleLineColors { get; set; }
+		public Color[] ColorScaleLineColors { get; set; } = new Color[]
+		{
+		Color.Blue,
+		Color.Green,
+		Color.Orange,
+		Color.Red
+		};
+		[Category("Scale")]
+		public float IndentColorScaleLine { get; set; } = 25;
 
 		[Category("Scale")]
-		float IndentNeedle { get; set; } = 12;
+		public float IndentNeedle { get; set; } = 12;
 		[Category("Scale")]
-		float IndentRods { get; set; } = 10;
+		public float IndentRods { get; set; } = 10;
 		[Category("Scale")]
-		float IndentAccentRods { get; set; } = 15;
+		public float IndentAccentRods { get; set; } = 15;
 		[Category("Scale")]
-		float IndentSubAccentRods { get; set; } = 15;
+		public float IndentSubAccentRods { get; set; } = 15;
+		[Category("Scale")]
+		public float ColorScaleLineWidth { get; set; } = 5;
+
+		float valueAngeleStep; 
 
 		#endregion
 
@@ -98,6 +110,8 @@ namespace RMD.WinForms.AnalogStyleControls
 			#region Preparation
 			Graphics g = e.Graphics;
 			g.SmoothingMode = SmoothingMode.HighQuality;
+
+			SetValueAngeleStep();
 
 			PointF center = new PointF(this.Width / 2, this.Height / 2);
 			
@@ -170,10 +184,16 @@ namespace RMD.WinForms.AnalogStyleControls
 
 			void DrawColoredScaleLines()
 			{
-				DrawArcLine(new Pen(Color.Blue, 5), center, 175, StartNeedleAngle, 29);
-				DrawArcLine(new Pen(Color.Green, 5), center, 175, StartNeedleAngle + 31, 90);
-				DrawArcLine(new Pen(Color.Orange, 5), center, 175, StartNeedleAngle + 122, 28);
-				DrawArcLine(new Pen(Color.Red, 5), center, 175, StartNeedleAngle + 151, 29);
+				for (int i = 0; i < ColorScaleLineColors.Length && i < ColorScaleLineValues.Length; i++)
+				{
+					DrawArcLine(
+						new Pen(ColorScaleLineColors[i], ColorScaleLineWidth),
+						center,
+						maxRadius - IndentColorScaleLine,
+						GetAngelOfValue(ColorScaleLineValues[i].X),
+						(ColorScaleLineValues[i].Y - ColorScaleLineValues[i].X) * valueAngeleStep
+						);
+				}
 			}
 
 			#endregion
@@ -185,11 +205,14 @@ namespace RMD.WinForms.AnalogStyleControls
 			Refresh();
 		}
 
-		private float GetNeedleAngel(float minAngle, float maxAngle, float minValue, float maxValue)
+		private float GetAngelOfValue(float value)
 		{
-			float step =  (maxAngle - minAngle) / (maxValue - minValue);
+			return StartNeedleAngle + (valueAngeleStep * (MinValue + value));
+		}
 
-			return minAngle + (step * (minValue + Value));
+		private void SetValueAngeleStep()
+		{
+			valueAngeleStep = (EndNeedleAngle - StartNeedleAngle) / (MaxValue - MinValue);
 		}
 	}
 }
